@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kyiv Skyline: Real Fix</title>
+    <title>Kyiv Skyline: Ultimate Fix</title>
     <style>
         :root { --bg: #0f172a; --acc: #38bdf8; }
         body { margin: 0; padding: 0; font-family: 'Inter', sans-serif; background: var(--bg); color: #f8fafc; display: flex; align-items: center; justify-content: center; min-height: 100vh; overflow: hidden; transition: 1s; }
@@ -22,7 +22,7 @@
         @keyframes fall { to { transform: translateY(110vh); } }
         @keyframes sfall { 0% { transform: translate(0, 0); } 50% { transform: translate(20px, 50vh); } 100% { transform: translate(-20px, 110vh); } }
         .cloud { position: absolute; background: rgba(255,255,255,0.1); filter: blur(40px); border-radius: 50%; animation: drift linear infinite; }
-        @keyframes drift { from { left: -400px; } to { left: 110vw; } }
+        @keyframes drift { from { left: -400px; } to { left: 100vw; } }
         .lightning { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #fff; opacity: 0; z-index: 2; pointer-events: none; }
         @keyframes flash { 0%, 90%, 100% { opacity: 0; } 92% { opacity: 0.4; } }
         .meteor { position: absolute; width: 2px; height: 60px; background: orange; animation: mfall 0.8s linear infinite; }
@@ -30,7 +30,12 @@
         .zombie { position: absolute; font-size: 3rem; bottom: -10px; animation: zwalk 10s linear infinite; z-index: 5; }
         @keyframes zwalk { from { left: -100px; } to { left: 110vw; } }
         .blood { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,0,0,0.2); opacity: 0; pointer-events: none; transition: 2s; z-index: 4; }
-        .matrix { position: absolute; color: #0f0; font-family: monospace; animation: fall 3s linear infinite; }
+        .ai-code { position: absolute; color: #0f0; font-family: monospace; font-size: 14px; animation: fall 3s linear infinite; white-space: nowrap; }
+        .ai-scanner { position: fixed; top: 0; left: 0; width: 100%; height: 4px; background: #0f0; box-shadow: 0 0 20px #0f0; z-index: 20; animation: scan 4s linear infinite; }
+        @keyframes scan { from { top: -10%; } to { top: 110%; } }
+        .glitch { animation: glitch-anim 0.2s infinite; }
+        @keyframes glitch-anim { 0% { transform: translate(0); text-shadow: 2px 2px #f0f; } 50% { transform: translate(-2px, 2px); text-shadow: -2px -2px #0ff; } 100% { transform: translate(0); } }
+        @keyframes shake { 0%,100%{transform:translate(0,0)} 25%{transform:translate(5px,-5px)} 50%{transform:translate(-5px,5px)} }
     </style>
 </head>
 <body>
@@ -38,11 +43,12 @@
     <div id="effects-bg"></div>
     <div id="lightning-bolt" class="lightning"></div>
     <div id="blood-fog" class="blood"></div>
+    <div id="scanner" style="display:none;" class="ai-scanner"></div>
 
     <div class="container" id="main-cont">
-        <h1 class="header-title"><span onclick="activateSpace()">KYIV</span><span onclick="activateZom()">SYNERGY</span></h1>
+        <h1 class="header-title" id="title"><span onclick="activateSpace()">KYIV</span><span onclick="activateZom()">SYNERGY</span></h1>
         <div id="current-temp" onclick="activateAI()">--°C</div>
-        <div id="status" style="color:var(--acc); text-transform:uppercase; letter-spacing:2px">Initializing...</div>
+        <div id="status" style="color:var(--acc); text-transform:uppercase; letter-spacing:2px">Online</div>
         <div class="forecast-grid" id="real-f"></div>
         <div class="forecast-grid" id="demo-f" style="border-top:1px solid rgba(255,255,255,0.1); margin-top:20px; padding-top:10px"></div>
     </div>
@@ -97,6 +103,8 @@
             stopAllS(); const bg = document.getElementById('effects-bg');
             bg.innerHTML = ''; document.getElementById('lightning-bolt').style.animation = 'none';
             document.getElementById('blood-fog').style.opacity = '0';
+            document.getElementById('scanner').style.display = 'none';
+            document.getElementById('title').classList.remove('glitch');
             document.getElementById('main-cont').style.animation = 'none';
             document.body.style.background = "#0f172a";
             if(s.includes("Rainy")) { play('rain'); for(let i=0;i<100;i++) spawn(bg, 'rain-drop'); }
@@ -117,10 +125,14 @@
 
         window.activateSpace = () => { applyVisuals('None'); play('meteor'); document.body.style.background="#000"; document.getElementById('status').innerText="METEORS"; for(let i=0;i<30;i++) spawn(document.getElementById('effects-bg'), 'meteor'); };
         window.activateZom = () => { applyVisuals('None'); play('zombie'); document.getElementById('blood-fog').style.opacity='1'; document.getElementById('main-cont').style.animation='shake 0.5s infinite'; document.getElementById('status').innerText="ZOMBIES"; for(let i=0;i<10;i++) { const z=document.createElement('div'); z.className='zombie'; z.innerText='🧟'; z.style.left=Math.random()*100+'vw'; document.getElementById('effects-bg').appendChild(z); } };
-        window.activateAI = () => { applyVisuals('None'); play('ai'); document.body.style.background="#000"; document.getElementById('status').innerText="AI INVASION"; for(let i=0;i<50;i++) spawn(document.getElementById('effects-bg'), 'matrix', Math.random()>0.5?'1':'0'); };
-        
+        window.activateAI = () => { 
+            applyVisuals('None'); play('ai'); document.body.style.background="#000"; 
+            document.getElementById('status').innerText="AI INVASION"; 
+            document.getElementById('scanner').style.display='block';
+            document.getElementById('title').classList.add('glitch');
+            for(let i=0;i<50;i++) spawn(document.getElementById('effects-bg'), 'ai-code', Math.random()>0.5?'AI_CORE_ERROR':'1010101'); 
+        };
         init();
     </script>
-    <style> @keyframes shake { 0%,100%{transform:translate(0,0)} 25%{transform:translate(5px,-5px)} 50%{transform:translate(-5px,5px)} } </style>
 </body>
 </html>
