@@ -10,8 +10,6 @@ repos:
   - repo: https://github.com/hadolint/hadolint
     rev: v2.12.0
     hooks:
-      - id: hadolint
-        name: Lint Dockerfile
-        entry: hadolint Dockerfile
-        language: system
+      - id: hadolint-docker
+        name: Lint Dockerfile (Docker)
         always_run: true
