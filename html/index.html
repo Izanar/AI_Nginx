@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kyiv Weather: Interactive Forecast & Easter Eggs</title>
+    <title>Kyiv Weather: Interactive Forecast & AI Secrets</title>
     <style>
         :root {
             --bg-color: #0f172a;
@@ -36,17 +36,25 @@
             transition: transform 0.3s;
         }
 
-        h1 {
-            font-size: 2.5rem; margin: 0;
-            background: linear-gradient(90deg, #38bdf8, #818cf8, #38bdf8);
-            background-size: 200% auto;
+        .header-title {
+            font-size: 2.5rem; margin: 0; font-weight: 900;
+            display: flex; justify-content: center; gap: 10px;
+            cursor: default;
+        }
+        .header-title span {
+            cursor: pointer; transition: transform 0.3s;
+            background: linear-gradient(90deg, #38bdf8, #818cf8);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            animation: shine 3s linear infinite;
         }
-        @keyframes shine { to { background-position: 200% center; } }
+        .header-title span:hover { transform: scale(1.1) rotate(2deg); filter: brightness(1.5); }
 
-        #current-temp { font-size: 4rem; font-weight: 800; margin: 10px 0; color: #fff; }
+        #current-temp { 
+            font-size: 4rem; font-weight: 800; margin: 10px 0; color: #fff; 
+            cursor: pointer; transition: all 0.3s;
+        }
+        #current-temp:hover { text-shadow: 0 0 20px var(--accent); transform: scale(1.05); }
+
         #current-status { font-size: 1.2rem; color: var(--accent); margin-bottom: 20px; text-transform: uppercase; letter-spacing: 2px; }
 
         .section-label { font-size: 0.8rem; opacity: 0.5; margin: 20px 0 10px; text-transform: uppercase; letter-spacing: 1px; }
@@ -63,9 +71,6 @@
         .forecast-day:hover { transform: translateY(-5px); background: rgba(255,255,255,0.15); border-color: rgba(56, 189, 248, 0.4); }
         .forecast-day.active { background: rgba(56, 189, 248, 0.2); border-color: var(--accent); box-shadow: 0 0 15px rgba(56, 189, 248, 0.3); }
         
-        .day-name { font-size: 0.8rem; opacity: 0.7; margin-bottom: 5px; }
-        .day-temp { font-weight: bold; font-size: 1.1rem; }
-
         /* Weather Animations */
         .rain-drop {
             position: absolute; background: linear-gradient(to bottom, transparent, #fff);
@@ -146,25 +151,51 @@
             75% { transform: translate(5px, 5px); }
             100% { transform: translate(0, 0); }
         }
+
+        /* Easter Egg: AI Invasion */
+        .ai-code {
+            position: absolute; font-family: monospace; color: #0f0;
+            font-size: 14px; top: -20px; white-space: nowrap;
+            animation: matrix-fall linear infinite; opacity: 0.7;
+        }
+        @keyframes matrix-fall { to { transform: translateY(110vh); } }
+        
+        .ai-scanner {
+            position: fixed; top: 0; left: 0; width: 100%; height: 4px;
+            background: rgba(0, 255, 0, 0.5); box-shadow: 0 0 20px #0f0;
+            z-index: 20; animation: scan 4s linear infinite;
+        }
+        @keyframes scan { from { top: -10%; } to { top: 110%; } }
+        
+        .glitch-text { animation: glitch 0.2s infinite; }
+        @keyframes glitch {
+            0% { transform: translate(0); text-shadow: 2px 2px #f0f; }
+            50% { transform: translate(-2px, 2px); text-shadow: -2px -2px #0ff; }
+            100% { transform: translate(0); }
+        }
     </style>
 </head>
 <body>
     <div id="effects-bg"></div>
     <div id="lightning-bolt" class="lightning"></div>
     <div id="blood-fog" class="blood-fog"></div>
+    <div id="scanner" style="display:none;" class="ai-scanner"></div>
 
     <div class="container" id="main-container">
-        <h1>KYIV SYNERGY</h1>
-        <div id="current-temp">--°C</div>
-        <div id="current-status">Detecting Atmosphere...</div>
+        <h1 class="header-title">
+            <span onclick="activateSpaceEgg()">KYIV</span>
+            <span onclick="activateZombieEgg()">SYNERGY</span>
+        </h1>
+        <div id="current-temp" onclick="activateAIEgg()">--°C</div>
+        <div id="current-status">System Online</div>
         
         <div class="section-label">Real 5-Day Forecast</div>
         <div class="forecast-grid" id="real-forecast"></div>
         
-        <div class="section-label">Demo: Interactive Effects Test</div>
+        <div class="section-label">Demo: Weather Lab</div>
         <div class="forecast-grid" id="demo-forecast"></div>
         
-        <p style="margin-top: 30px; opacity: 0.4; font-size: 0.7rem;">Click any day for effects. Type "SPACE" or "ZOMBIE" for secrets.</p>
+        <p style="margin-top: 30px; opacity: 0.4; font-size: 0.7rem;">Click "KYIV", "SYNERGY" or Temperature for Secrets • Mouse Only</p>
     </div>
 
     <script>
@@ -183,8 +214,6 @@
             { name: "Demo", status: "Stormy", temp: 15, code: 95 }
         ];
 
-        let typedSecret = "";
-
         async function init() {
             try {
                 const response = await fetch('https://api.open-meteo.com/v1/forecast?latitude=50.4501&longitude=30.5234&current=temperature_2m,weather_code&daily=weather_code,temperature_2m_max&timezone=auto');
@@ -202,18 +231,9 @@
 
                 applyVisuals(WEATHER_MAP[data.current.weather_code] || "Clear");
             } catch (e) {
-                document.getElementById('current-status').innerText = "Offline Mode";
+                document.getElementById('current-status').innerText = "Sync Error";
                 applyVisuals("Clear");
             }
-            
-            // Easter Egg Keyboard Listeners
-            window.addEventListener('keydown', (e) => {
-                typedSecret += e.key.toUpperCase();
-                typedSecret = typedSecret.slice(-10);
-                
-                if (typedSecret.includes("SPACE")) activateSpaceEgg();
-                if (typedSecret.includes("ZOMBIE")) activateZombieEgg();
-            });
         }
 
         function createDayElement(container, name, temp, code, forcedStatus = null) {
@@ -243,17 +263,28 @@
             return "☀️";
         }
 
-        function applyVisuals(status) {
+        function resetAll() {
             const bg = document.getElementById('effects-bg');
             const lightning = document.getElementById('lightning-bolt');
             const fog = document.getElementById('blood-fog');
+            const scanner = document.getElementById('scanner');
             const container = document.getElementById('main-container');
-            
+            const title = document.querySelector('.header-title');
+
             bg.innerHTML = '';
             lightning.style.animation = 'none';
             fog.style.opacity = '0';
+            scanner.style.display = 'none';
             container.classList.remove('shake');
+            title.classList.remove('glitch-text');
             document.body.style.filter = 'none';
+            document.body.style.background = "#0f172a";
+        }
+
+        function applyVisuals(status) {
+            resetAll();
+            const bg = document.getElementById('effects-bg');
+            const lightning = document.getElementById('lightning-bolt');
 
             if (status.includes("Rainy") || status.includes("Showers")) {
                 document.body.style.background = "#1e293b";
@@ -269,7 +300,6 @@
                 lightning.style.animation = 'flash 5s infinite';
                 for(let i=0; i<200; i++) createParticle(bg, 'rain-drop', '0.3s');
             } else {
-                document.body.style.background = "#0f172a";
                 createParticle(bg, 'sun-aura');
             }
         }
@@ -294,11 +324,9 @@
             parent.appendChild(el);
         }
 
-        // Easter Egg: Space
-        function activateSpaceEgg() {
-            typedSecret = "";
+        window.activateSpaceEgg = () => {
+            resetAll();
             const bg = document.getElementById('effects-bg');
-            bg.innerHTML = '';
             document.body.style.background = "#000";
             document.getElementById('current-status').innerText = "METEOR SHOWER";
             for(let i=0; i<50; i++) {
@@ -308,28 +336,42 @@
                 m.style.animationDelay = (Math.random() * 5) + 's';
                 bg.appendChild(m);
             }
-        }
+        };
 
-        // Easter Egg: Zombie
-        function activateZombieEgg() {
-            typedSecret = "";
+        window.activateZombieEgg = () => {
+            resetAll();
             const bg = document.getElementById('effects-bg');
-            bg.innerHTML = '';
             document.body.style.background = "#050505";
             document.getElementById('blood-fog').style.opacity = '1';
             document.getElementById('main-container').classList.add('shake');
-            document.getElementById('current-status').innerText = "APOCALYPSE";
+            document.getElementById('current-status').innerText = "UNDEAD APOCALYPSE";
             document.body.style.filter = 'sepia(0.5) contrast(1.5)';
-            
-            for(let i=0; i<10; i++) {
+            for(let i=0; i<15; i++) {
                 const z = document.createElement('div');
-                z.className = 'zombie';
-                z.innerText = "🧟";
+                z.className = 'zombie'; z.innerText = "🧟";
                 z.style.animationDelay = (Math.random() * 10) + 's';
                 z.style.animationDuration = (Math.random() * 5 + 5) + 's';
                 bg.appendChild(z);
             }
-        }
+        };
+
+        window.activateAIEgg = () => {
+            resetAll();
+            const bg = document.getElementById('effects-bg');
+            document.body.style.background = "#000";
+            document.getElementById('scanner').style.display = 'block';
+            document.querySelector('.header-title').classList.add('glitch-text');
+            document.getElementById('current-status').innerText = "AI INVASION : LOADING...";
+            
+            for(let i=0; i<50; i++) {
+                const code = document.createElement('div');
+                code.className = 'ai-code';
+                code.innerText = Math.random() > 0.5 ? "1010101" : "AI_CORE_ERROR";
+                code.style.left = (Math.random() * 100) + 'vw';
+                code.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                bg.appendChild(code);
+            }
+        };
 
         init();
     </script>
