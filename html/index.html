@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kyiv Skyline: Real Sound & Visuals</title>
+    <title>Kyiv Skyline: Perfect Audio-Visual</title>
     <style>
         :root { --bg: #02040a; --acc: #38bdf8; }
         body { margin: 0; padding: 0; font-family: 'Inter', sans-serif; background: var(--bg); color: #f8fafc; display: flex; align-items: center; justify-content: center; min-height: 100vh; overflow: hidden; transition: 1s; }
         #effects-bg { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 1; }
-        .container { position: relative; z-index: 10; text-align: center; width: 90%; max-width: 900px; padding: 40px; background: rgba(15,23,42,0.7); backdrop-filter: blur(15px); border-radius: 3rem; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 25px 50px -12px rgba(0,0,0,0.8); }
+        .container { position: relative; z-index: 10; text-align: center; width: 90%; max-width: 900px; padding: 40px; background: rgba(15,23,42,0.7); backdrop-filter: blur(20px); border-radius: 3rem; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 25px 50px -12px rgba(0,0,0,0.8); }
         .header-title { font-size: 2.5rem; font-weight: 900; margin: 0; display: flex; justify-content: center; gap: 15px; }
         .header-title span { cursor: pointer; transition: 0.3s; background: linear-gradient(90deg, #38bdf8, #818cf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         #current-temp { font-size: 5rem; font-weight: 800; margin: 10px 0; cursor: pointer; }
@@ -16,25 +16,9 @@
         .forecast-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-top: 20px; }
         .day-card { background: rgba(255,255,255,0.05); padding: 12px; border-radius: 1.2rem; cursor: pointer; transition: 0.3s; }
         
-        /* GIANT METEORS */
-        .meteor {
-            position: absolute; width: 10px; height: 400px;
-            background: linear-gradient(to top, #fff, #ffae00, transparent);
-            border-radius: 999px; filter: drop-shadow(0 0 40px #ff4500);
-            animation: mfall 0.8s linear infinite; opacity: 0;
-        }
-        .meteor::after {
-            content: ''; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
-            width: 25px; height: 25px; background: #fff; border-radius: 50%;
-            box-shadow: 0 0 50px 20px #ff8c00, 0 0 100px 40px #ff4500;
-        }
-        @keyframes mfall {
-            0% { transform: translate(100vw, -400px) rotate(45deg); opacity: 0; }
-            10% { opacity: 1; }
-            100% { transform: translate(-500px, 100vh) rotate(45deg); opacity: 0; }
-        }
-
-        /* WEATHER FX */
+        .meteor { position: absolute; width: 8px; height: 300px; background: linear-gradient(to top, #fff, #ffae00, transparent); border-radius: 999px; filter: drop-shadow(0 0 30px #ff4500); animation: mfall 0.8s linear infinite; opacity: 0; }
+        .meteor::after { content: ''; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 20px; height: 20px; background: #fff; border-radius: 50%; box-shadow: 0 0 40px 15px #ff8c00, 0 0 80px 25px #ff4500; }
+        @keyframes mfall { 0% { transform: translate(100vw, -300px) rotate(45deg); opacity: 0; } 10% { opacity: 1; } 100% { transform: translate(-400px, 100vh) rotate(45deg); opacity: 0; } }
         .sun-aura { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80vmax; height: 80vmax; background: radial-gradient(circle, rgba(252,211,77,0.15) 0%, transparent 70%); animation: pulse 4s infinite alternate; pointer-events: none; }
         @keyframes pulse { from { opacity: 0.4; transform: translate(-50%, -50%) scale(1); } to { opacity: 0.8; transform: translate(-50%, -50%) scale(1.1); } }
         .cloud { position: absolute; background: rgba(255,255,255,0.15); filter: blur(60px); border-radius: 50%; animation: drift linear infinite; }
@@ -53,15 +37,15 @@
     </style>
 </head>
 <body>
-    <button id="audio-btn" onclick="enableAudio()">🔇 ENABLE SOUND</button>
+    <button id="audio-btn" onclick="toggleAudio()">🔇 ENABLE SOUND</button>
     
-    <!-- Local Audio Engine -->
-    <audio id="snd-rain" loop src="audio/rain.mp3"></audio>
-    <audio id="snd-wind" loop src="audio/wind.mp3"></audio>
-    <audio id="snd-thunder" loop src="audio/thunder.mp3"></audio>
-    <audio id="snd-zombie" loop src="audio/zombie.mp3"></audio>
-    <audio id="snd-meteor" src="audio/meteor.mp3"></audio>
-    <audio id="snd-ai" loop src="audio/ai.mp3"></audio>
+    <!-- Using stable external links to avoid local file corruption -->
+    <audio id="snd-rain" loop src="https://www.soundjay.com/nature/sounds/rain-07.mp3"></audio>
+    <audio id="snd-wind" loop src="https://www.soundjay.com/nature/sounds/wind-01.mp3"></audio>
+    <audio id="snd-thunder" loop src="https://www.soundjay.com/nature/sounds/thunder-05.mp3"></audio>
+    <audio id="snd-zombie" loop src="https://www.soundjay.com/human/sounds/zombie-1.mp3"></audio>
+    <audio id="snd-meteor" src="https://www.soundjay.com/mechanical/sounds/fireball-whoosh-01.mp3"></audio>
+    <audio id="snd-ai" loop src="https://www.soundjay.com/buttons/sounds/button-20.mp3"></audio>
 
     <div id="effects-bg"></div>
     <div id="lightning-bolt" class="lightning"></div>
@@ -71,7 +55,7 @@
     <div class="container" id="main-cont">
         <h1 class="header-title"><span onclick="activateSpace()">KYIV</span><span onclick="activateZom()">SYNERGY</span></h1>
         <div id="current-temp" onclick="activateAI()">--°C</div>
-        <div id="status" style="color:var(--acc); text-transform:uppercase; letter-spacing:2px; font-weight:bold">Audio-Visual Sync Active</div>
+        <div id="status" style="color:var(--acc); text-transform:uppercase; letter-spacing:2px; font-weight:bold">System Active</div>
         <div class="forecast-grid" id="real-f"></div>
         <div class="forecast-grid" id="demo-f" style="border-top:1px solid rgba(255,255,255,0.1); margin-top:20px; padding-top:10px"></div>
     </div>
@@ -80,18 +64,32 @@
         let audioOn = false;
         const ALL_SND = ["snd-rain", "snd-wind", "snd-thunder", "snd-zombie", "snd-meteor", "snd-ai"];
 
-        function enableAudio() {
-            audioOn = true;
-            document.getElementById('audio-btn').innerText = "🔊 SOUND ON";
-            ALL_SND.forEach(id => {
-                const s = document.getElementById(id);
-                s.play().then(() => s.pause());
-            });
-            applyFX(document.getElementById('status').innerText);
+        function toggleAudio() {
+            audioOn = !audioOn;
+            const btn = document.getElementById('audio-btn');
+            if (audioOn) {
+                btn.innerText = "🔊 SOUND ON";
+                // Chrome requires a touch/click to enable audio context
+                ALL_SND.forEach(id => {
+                    const s = document.getElementById(id);
+                    s.play().then(() => s.pause()).catch(() => {});
+                });
+                applyFX(document.getElementById('status').innerText);
+            } else {
+                btn.innerText = "🔇 ENABLE SOUND";
+                stopAllS();
+            }
         }
 
-        function stopAllS() { ALL_SND.forEach(id => { const s = document.getElementById(id); s.pause(); s.currentTime = 0; }); }
-        function playS(id) { if(audioOn) document.getElementById(id).play().catch(e => console.log(e)); }
+        function stopAllS() {
+            ALL_SND.forEach(id => {
+                const s = document.getElementById(id);
+                s.pause();
+                s.currentTime = 0;
+            });
+        }
+
+        function playS(id) { if(audioOn) document.getElementById(id).play().catch(() => {}); }
 
         const MAP = { 0:"Clear", 3:"Cloudy", 63:"Rainy", 71:"Snowy", 95:"Stormy" };
         const ICONS = { 0:"☀️", 3:"☁️", 63:"🌧️", 71:"❄️", 95:"⚡" };
@@ -130,7 +128,7 @@
             else if(s === "Cloudy") { document.body.style.background = "#334155"; playS('snd-wind'); for(let i=0; i<6; i++) spawn(bg, 'cloud'); }
             else if(s.includes("Rainy")) { document.body.style.background = "#0f172a"; playS('snd-rain'); for(let i=0; i<100; i++) spawn(bg, 'rain-drop'); }
             else if(s.includes("Snowy")) { document.body.style.background = "#1e293b"; playS('snd-wind'); for(let i=0; i<60; i++) spawn(bg, 'snow-flake'); }
-            else if(s === "Stormy") { document.body.style.background = "#020617"; playS('snd-thunder'); playS('snd-rain'); document.getElementById('lightning-bolt').style.animation = 'flash 5s infinite'; for(let i=0; i<120; i++) spawn(bg, 'rain-drop'); }
+            else if(s === "Stormy") { document.body.style.background = "#020617"; playS('snd-thunder'); playS('snd-rain'); document.getElementById('lightning-bolt').style.animation = 'flash 5s infinite'; for(let i=0;i<120;i++) spawn(bg, 'rain-drop'); }
         }
 
         function spawn(p, c, txt=null) {
