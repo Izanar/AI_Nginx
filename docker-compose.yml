@@ -4,8 +4,8 @@ services:
     ports:
       - "8080:80"
     volumes:
-      - web_data:/usr/share/nginx/html
+      - web_images:/usr/share/nginx/html/images
     restart: always
 
 volumes:
-  web_data:
+  web_images:
