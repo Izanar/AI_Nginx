@@ -3,131 +3,114 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kyiv Weather: Audio-Visual Dashboard</title>
+    <title>Kyiv Skyline: Epic Edition</title>
     <style>
-        :root { --bg-color: #0f172a; --accent: #38bdf8; }
-        body {
-            margin: 0; padding: 0; font-family: 'Inter', sans-serif;
-            background-color: var(--bg-color); color: #f8fafc;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            min-height: 100vh; overflow-x: hidden; transition: all 1s ease;
-        }
+        :root { --bg: #0f172a; --acc: #38bdf8; }
+        body { margin: 0; padding: 0; font-family: 'Inter', sans-serif; background: var(--bg); color: #f8fafc; display: flex; align-items: center; justify-content: center; min-height: 100vh; overflow: hidden; transition: 1s; }
         #effects-bg { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 1; }
-        .container {
-            position: relative; z-index: 10; text-align: center; width: 95%; max-width: 1000px;
-            padding: 40px; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(12px);
-            border-radius: 2.5rem; border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-        }
-        .header-title { font-size: 2.5rem; margin: 0; display: flex; justify-content: center; gap: 10px; }
-        .header-title span { cursor: pointer; transition: transform 0.3s; background: linear-gradient(90deg, #38bdf8, #818cf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        #current-temp { font-size: 4rem; font-weight: 800; margin: 10px 0; cursor: pointer; }
-        #audio-toggle {
-            position: fixed; top: 20px; right: 20px; z-index: 100;
-            background: var(--accent); color: #000; border: none; padding: 10px 20px;
-            border-radius: 20px; font-weight: bold; cursor: pointer;
-        }
-        .forecast-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
-        .forecast-day { background: rgba(255,255,255,0.05); padding: 12px; border-radius: 1.2rem; cursor: pointer; }
-        .forecast-day.active { background: rgba(56, 189, 248, 0.2); border-color: var(--accent); }
-        .rain-drop { position: absolute; background: #fff; width: 1px; height: 30px; opacity: 0.3; animation: fall linear infinite; }
-        .snow-flake { position: absolute; background: #fff; border-radius: 50%; opacity: 0.6; animation: fall linear infinite; }
+        .container { position: relative; z-index: 10; text-align: center; width: 90%; max-width: 900px; padding: 40px; background: rgba(15,23,42,0.7); backdrop-filter: blur(15px); border-radius: 2.5rem; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); }
+        .header-title { font-size: 3rem; font-weight: 900; margin: 0; display: flex; justify-content: center; gap: 15px; }
+        .header-title span { cursor: pointer; transition: 0.3s; background: linear-gradient(90deg, #38bdf8, #818cf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .header-title span:hover { transform: scale(1.1); filter: brightness(1.3); }
+        #current-temp { font-size: 5rem; font-weight: 800; margin: 10px 0; cursor: pointer; transition: 0.3s; }
+        #current-temp:hover { text-shadow: 0 0 30px var(--acc); }
+        #audio-btn { position: fixed; top: 20px; right: 20px; z-index: 100; background: var(--acc); color: #000; border: none; padding: 12px 24px; border-radius: 30px; font-weight: 900; cursor: pointer; box-shadow: 0 0 20px rgba(56,189,248,0.4); }
+        .forecast-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; margin-top: 20px; }
+        .day-card { background: rgba(255,255,255,0.05); padding: 15px; border-radius: 1.5rem; cursor: pointer; transition: 0.3s; border: 1px solid transparent; }
+        .day-card:hover { transform: translateY(-5px); background: rgba(255,255,255,0.1); border-color: var(--acc); }
+        .icon { font-size: 1.8rem; margin: 8px 0; }
+        /* FX */
+        .rain { position: absolute; background: #fff; width: 1px; height: 40px; opacity: 0.3; animation: fall linear infinite; }
+        .snow { position: absolute; background: #fff; border-radius: 50%; opacity: 0.8; animation: fall linear infinite; }
         @keyframes fall { to { transform: translateY(110vh); } }
         .lightning { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #fff; opacity: 0; z-index: 2; pointer-events: none; }
-        @keyframes flash { 0%, 90%, 100% { opacity: 0; } 92% { opacity: 0.4; } }
-        .meteor { position: absolute; width: 2px; height: 50px; background: orange; animation: mfall 0.8s linear infinite; }
+        @keyframes flash { 0%, 90%, 100% { opacity: 0; } 92% { opacity: 0.5; } }
+        .meteor { position: absolute; width: 2px; height: 80px; background: linear-gradient(orange, transparent); animation: mfall 0.7s linear infinite; }
         @keyframes mfall { from { transform: translate(100vw, -100px) rotate(-45deg); } to { transform: translate(-100px, 100vh) rotate(-45deg); } }
-        .zombie { position: absolute; font-size: 3rem; bottom: -10px; animation: zwalk 10s linear infinite; }
+        .zom { position: absolute; font-size: 3.5rem; bottom: -10px; animation: zwalk 12s linear infinite; filter: grayscale(1) drop-shadow(0 0 10px red); }
         @keyframes zwalk { from { left: -100px; } to { left: 110vw; } }
-        .blood-fog { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,0,0,0.2); opacity: 0; pointer-events: none; transition: 2s; }
-        .ai-code { position: absolute; color: #0f0; font-family: monospace; animation: fall 3s linear infinite; }
+        .fog { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(150,0,0,0.3); opacity: 0; pointer-events: none; transition: 2s; z-index: 5; }
+        .matrix { position: absolute; color: #0f0; font-family: monospace; font-size: 1.2rem; animation: fall 2s linear infinite; text-shadow: 0 0 5px #0f0; }
     </style>
 </head>
 <body>
-    <button id="audio-toggle" onclick="toggleAudio()">🔇 Enable Audio</button>
+    <button id="audio-btn" onclick="toggleAud()">🔇 ENABLE SOUND</button>
     <div id="effects-bg"></div>
     <div id="lightning-bolt" class="lightning"></div>
-    <div id="blood-fog" class="blood-fog"></div>
+    <div id="fog" class="fog"></div>
 
     <div class="container">
-        <h1 class="header-title"><span onclick="activateSpaceEgg()">KYIV</span><span onclick="activateZombieEgg()">SYNERGY</span></h1>
-        <div id="current-temp" onclick="activateAIEgg()">--°C</div>
-        <div id="current-status">Syncing...</div>
-        <div class="forecast-grid" id="real-forecast"></div>
-        <div class="forecast-grid" id="demo-forecast" style="margin-top:20px"></div>
+        <h1 class="header-title"><span onclick="actSpace()">KYIV</span><span onclick="actZom()">SYNERGY</span></h1>
+        <div id="current-temp" onclick="actAI()">--°C</div>
+        <div id="status" style="text-transform: uppercase; letter-spacing: 3px; color: var(--acc);">System Ready</div>
+        <div class="forecast-grid" id="real-f"></div>
+        <div class="forecast-grid" id="demo-f" style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px;"></div>
     </div>
 
     <script>
-        let audioEnabled = false;
-        const SOUNDS = {
-            rain: new Audio('https://assets.mixkit.co/active_storage/sfx/2534/2534-preview.mp3'),
-            wind: new Audio('https://assets.mixkit.co/active_storage/sfx/2523/2523-preview.mp3'),
-            thunder: new Audio('https://assets.mixkit.co/active_storage/sfx/2521/2521-preview.mp3'),
-            zombie: new Audio('https://assets.mixkit.co/active_storage/sfx/1084/1084-preview.mp3'),
-            meteor: new Audio('https://assets.mixkit.co/active_storage/sfx/2533/2534-preview.mp3'),
-            ai: new Audio('https://assets.mixkit.co/active_storage/sfx/2535/2535-preview.mp3')
+        let aud = false;
+        const S = {
+            rain: new Audio('https://www.soundjay.com/nature/sounds/rain-07.mp3'),
+            wind: new Audio('https://www.soundjay.com/nature/sounds/wind-01.mp3'),
+            thunder: new Audio('https://www.soundjay.com/nature/sounds/thunder-05.mp3'),
+            zom: new Audio('https://cdn.freesound.org/previews/415/415209_5121236-lq.mp3'),
+            met: new Audio('https://www.soundjay.com/mechanical/sounds/fire-whoosh-01.mp3'),
+            ai: new Audio('https://cdn.freesound.org/previews/633/633444_1648170-lq.mp3')
         };
-        Object.values(SOUNDS).forEach(s => { s.loop = true; s.volume = 0.4; });
+        Object.values(S).forEach(s => { s.loop = true; s.volume = 0.5; });
+        S.met.loop = false; S.zom.loop = true; S.ai.loop = true;
 
-        function toggleAudio() {
-            audioEnabled = !audioEnabled;
-            document.getElementById('audio-toggle').innerText = audioEnabled ? "🔊 Audio On" : "🔇 Enable Audio";
-            if (!audioEnabled) stopAllSounds();
-            else applyVisuals(document.getElementById('current-status').innerText);
+        function toggleAud() {
+            aud = !aud;
+            document.getElementById('audio-btn').innerText = aud ? "🔊 SOUND ON" : "🔇 ENABLE SOUND";
+            if(!aud) stopS(); else applyFX(document.getElementById('status').innerText);
         }
+        function stopS() { Object.values(S).forEach(s => { s.pause(); s.currentTime = 0; }); }
+        function play(k) { if(aud) S[k].play().catch(e=>{}); }
 
-        function stopAllSounds() { Object.values(SOUNDS).forEach(s => { s.pause(); s.currentTime = 0; }); }
-
-        function playSound(key) { if(audioEnabled) SOUNDS[key].play().catch(e=>console.log("Audio block")); }
-
-        const WEATHER_MAP = { 0: "Clear", 1: "Mainly Clear", 2: "Partly Cloudy", 3: "Overcast", 61: "Rainy", 63: "Rainy", 71: "Snowy", 95: "Stormy" };
-        const DEMO = [{s:"Clear",c:0},{s:"Cloudy",c:3},{s:"Rainy",c:63},{s:"Snowy",c:71},{s:"Stormy",c:95}];
+        const MAP = { 0:"Clear", 3:"Cloudy", 63:"Rainy", 71:"Snowy", 95:"Stormy" };
+        const ICONS = { 0:"☀️", 3:"☁️", 63:"🌧️", 71:"❄️", 95:"⚡" };
 
         async function init() {
             try {
                 const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=50.45&longitude=30.52&current=temperature_2m,weather_code&daily=weather_code,temperature_2m_max');
                 const data = await res.json();
-                updateDisplay(Math.round(data.current.temperature_2m), WEATHER_MAP[data.current.weather_code] || "Clear");
-                const rc = document.getElementById('real-forecast');
-                for(let i=1; i<=5; i++) createDay(rc, new Date(data.daily.time[i]).toLocaleDateString('en',{weekday:'short'}), Math.round(data.daily.temperature_2m_max[i]), data.daily.weather_code[i]);
-                const dc = document.getElementById('demo-forecast');
-                DEMO.forEach(d => createDay(dc, "Demo", 20, d.c, d.s));
-                applyVisuals(WEATHER_MAP[data.current.weather_code] || "Clear");
-            } catch(e) { console.log(e); }
+                upd(Math.round(data.current.temperature_2m), MAP[data.current.weather_code]||"Clear");
+                const rf = document.getElementById('real-f');
+                for(let i=1;i<=5;i++) create(rf, new Date(data.daily.time[i]).toLocaleDateString('en',{weekday:'short'}), Math.round(data.daily.temperature_2m_max[i]), data.daily.weather_code[i]);
+                const df = document.getElementById('demo-f');
+                Object.entries(MAP).forEach(([c,s]) => create(df, "Demo", 20, c, s));
+                applyFX(MAP[data.current.weather_code]||"Clear");
+            } catch(e) {}
         }
 
-        function createDay(cont, n, t, c, fs=null) {
-            const s = fs || WEATHER_MAP[c] || "Clear";
-            const el = document.createElement('div');
-            el.className = 'forecast-day';
-            el.innerHTML = `<div>${n}</div><div>${t}°</div>`;
-            el.onclick = () => { updateDisplay(t, s); applyVisuals(s); };
-            cont.appendChild(el);
+        function create(p, n, t, c, fs=null) {
+            const s = fs || MAP[c] || "Clear";
+            const el = document.createElement('div'); el.className = 'day-card';
+            el.innerHTML = `<div>${n}</div><div class="icon">${ICONS[c]||"☀️"}</div><div>${t}°</div>`;
+            el.onclick = () => { upd(t,s); applyFX(s); };
+            p.appendChild(el);
         }
+        function upd(t,s) { document.getElementById('current-temp').innerText = `${t}°C`; document.getElementById('status').innerText = s; }
 
-        function updateDisplay(t, s) { document.getElementById('current-temp').innerText = `${t}°C`; document.getElementById('current-status').innerText = s; }
-
-        function applyVisuals(s) {
-            stopAllSounds();
-            const bg = document.getElementById('effects-bg');
-            const lb = document.getElementById('lightning-bolt');
-            bg.innerHTML = ''; lb.style.animation = 'none';
-            document.getElementById('blood-fog').style.opacity = '0';
-            if(s.includes("Rainy")) { playSound('rain'); for(let i=0;i<100;i++) spawn(bg, 'rain-drop'); }
-            else if(s.includes("Snowy") || s.includes("Cloudy")) { playSound('wind'); if(s.includes("Snowy")) for(let i=0;i<50;i++) spawn(bg,'snow-flake'); }
-            else if(s === "Stormy") { playSound('thunder'); playSound('rain'); lb.style.animation = 'flash 5s infinite'; }
+        function applyFX(s) {
+            stopS(); const bg = document.getElementById('effects-bg'); const lb = document.getElementById('lightning-bolt');
+            bg.innerHTML = ''; lb.style.animation = 'none'; document.getElementById('fog').style.opacity = '0';
+            document.body.style.background = "#0f172a";
+            if(s.includes("Rainy")) { play('rain'); for(let i=0;i<120;i++) spawn(bg, 'rain'); }
+            else if(s.includes("Snowy") || s.includes("Cloudy")) { play('wind'); if(s.includes("Snowy")) for(let i=0;i<60;i++) spawn(bg,'snow'); }
+            else if(s === "Stormy") { play('thunder'); play('rain'); lb.style.animation = 'flash 5s infinite'; for(let i=0;i<150;i++) spawn(bg,'rain'); }
         }
-
-        function spawn(p, c) {
+        function spawn(p, c, txt=null) {
             const el = document.createElement('div'); el.className = c;
-            el.style.left = Math.random()*100+'vw'; el.style.animationDuration = Math.random()*0.5+0.5+'s';
+            if(txt) el.innerText = txt;
+            el.style.left = Math.random()*100+'vw'; el.style.animationDuration = (Math.random()*0.5+0.5)+'s';
             p.appendChild(el);
         }
 
-        window.activateSpaceEgg = () => { applyVisuals('None'); playSound('meteor'); const bg = document.getElementById('effects-bg'); for(let i=0;i<30;i++) spawn(bg,'meteor'); };
-        window.activateZombieEgg = () => { applyVisuals('None'); playSound('zombie'); document.getElementById('blood-fog').style.opacity='1'; const bg = document.getElementById('effects-bg'); for(let i=0;i<10;i++) { const z = document.createElement('div'); z.className='zombie'; z.innerText='🧟'; z.style.left=Math.random()*100+'vw'; bg.appendChild(z); } };
-        window.activateAIEgg = () => { applyVisuals('None'); playSound('ai'); const bg = document.getElementById('effects-bg'); for(let i=0;i<50;i++) { const c = document.createElement('div'); c.className='ai-code'; c.innerText='101'; c.style.left=Math.random()*100+'vw'; bg.appendChild(c); } };
-
+        window.actSpace = () => { applyFX('None'); play('met'); document.body.style.background="#000"; document.getElementById('status').innerText="METEOR SHOWER"; for(let i=0;i<40;i++) spawn(document.getElementById('effects-bg'),'meteor'); };
+        window.actZom = () => { applyFX('None'); play('zom'); document.getElementById('fog').style.opacity='1'; document.getElementById('status').innerText="APOCALYPSE"; for(let i=0;i<12;i++) { const z=document.createElement('div'); z.className='zom'; z.innerText='🧟'; z.style.left=Math.random()*100+'vw'; document.getElementById('effects-bg').appendChild(z); } };
+        window.actAI = () => { applyFX('None'); play('ai'); document.body.style.background="#000"; document.getElementById('status').innerText="AI INVASION"; for(let i=0;i<60;i++) spawn(document.getElementById('effects-bg'),'matrix', Math.random()>0.5?'1':'0'); };
         init();
     </script>
 </body>
