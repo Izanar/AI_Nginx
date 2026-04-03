@@ -4,50 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kyiv Skyline: Absolute Audio-Visual</title>
-    <style>
-        :root { --bg: #02040a; --acc: #38bdf8; }
-        body { margin: 0; padding: 0; font-family: 'Inter', sans-serif; background: var(--bg); color: #f8fafc; display: flex; align-items: center; justify-content: center; min-height: 100vh; overflow: hidden; transition: 1s; }
-        #effects-bg { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 1; }
-        .container { position: relative; z-index: 10; text-align: center; width: 90%; max-width: 900px; padding: 40px; background: rgba(15,23,42,0.7); backdrop-filter: blur(20px); border-radius: 3rem; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 25px 50px -12px rgba(0,0,0,0.8); }
-        .header-title { font-size: 2.5rem; font-weight: 900; margin: 0; display: flex; justify-content: center; gap: 15px; }
-        .header-title span { cursor: pointer; transition: 0.3s; background: linear-gradient(90deg, #38bdf8, #818cf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        #current-temp { font-size: 5rem; font-weight: 800; margin: 10px 0; cursor: pointer; }
-        #audio-btn { position: fixed; top: 20px; right: 20px; z-index: 100; background: var(--acc); color: #000; border: none; padding: 12px 24px; border-radius: 30px; font-weight: 900; cursor: pointer; box-shadow: 0 0 20px rgba(56,189,248,0.4); }
-        .forecast-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-top: 20px; }
-        .day-card { background: rgba(255,255,255,0.05); padding: 12px; border-radius: 1.2rem; cursor: pointer; }
-        
-        /* GIANT VOLUMETRIC METEORS */
-        .meteor { position: absolute; width: 10px; height: 400px; background: linear-gradient(to top, #fff, #ffae00, transparent); border-radius: 999px; filter: drop-shadow(0 0 40px #ff4500); animation: mfall 0.8s linear infinite; opacity: 0; }
-        .meteor::after { content: ''; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 25px; height: 25px; background: #fff; border-radius: 50%; box-shadow: 0 0 50px 20px #ff8c00, 0 0 100px 40px #ff4500; }
-        @keyframes mfall { 0% { transform: translate(100vw, -400px) rotate(45deg); opacity: 0; } 10% { opacity: 1; } 100% { transform: translate(-500px, 100vh) rotate(45deg); opacity: 0; } }
-        
-        .sun-aura { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80vmax; height: 80vmax; background: radial-gradient(circle, rgba(252,211,77,0.15) 0%, transparent 70%); animation: pulse 4s infinite alternate; pointer-events: none; }
-        @keyframes pulse { from { opacity: 0.4; transform: translate(-50%, -50%) scale(1); } to { opacity: 0.8; transform: translate(-50%, -50%) scale(1.1); } }
-        .cloud { position: absolute; background: rgba(255,255,255,0.15); filter: blur(60px); border-radius: 50%; animation: drift linear infinite; }
-        @keyframes drift { from { left: -500px; } to { left: 105vw; } }
-        .rain-drop { position: absolute; background: #fff; width: 1px; height: 40px; opacity: 0.3; animation: fall linear infinite; }
-        .snow-flake { position: absolute; background: #fff; border-radius: 50%; opacity: 0.8; animation: fall linear infinite; }
-        @keyframes fall { to { transform: translateY(110vh); } }
-        .lightning { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #fff; opacity: 0; z-index: 2; pointer-events: none; }
-        @keyframes flash { 0%, 90%, 100% { opacity: 0; } 92% { opacity: 0.5; } }
-        .blood-fog { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle, rgba(255,0,0,0.3) 0%, rgba(50,0,0,0.7) 100%); opacity: 0; transition: 2s; z-index: 5; pointer-events: none; }
-        .matrix { position: absolute; color: #0f0; font-family: monospace; animation: fall 3s linear infinite; text-shadow: 0 0 5px #0f0; white-space: nowrap; font-size: 1.2rem; }
-        .scanner { position: fixed; top: 0; left: 0; width: 100%; height: 4px; background: #0f0; box-shadow: 0 0 30px #0f0; z-index: 20; animation: scan 4s linear infinite; display: none; }
-        @keyframes scan { from { top: -5%; } to { top: 105%; } }
-        .shake { animation: shake-anim 0.2s infinite; }
-        @keyframes shake-anim { 0% { transform: translate(0,0); } 25% { transform: translate(8px,-8px); } 50% { transform: translate(-8px,8px); } }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <button id="audio-btn" onclick="toggleAudio()">🔇 ENABLE SOUND</button>
-    
-    <!-- Real Local Audio -->
+
+    <!-- Audio Engine -->
     <audio id="snd-rain" loop src="audio/rain.mp3"></audio>
     <audio id="snd-wind" loop src="audio/wind.mp3"></audio>
     <audio id="snd-thunder" loop src="audio/thunder.mp3"></audio>
     <audio id="snd-zombie" loop src="audio/zombie.mp3"></audio>
     <audio id="snd-meteor" src="audio/meteor.mp3"></audio>
     <audio id="snd-ai" loop src="audio/ai.mp3"></audio>
+    <audio id="snd-sun" loop src="audio/sun.mp3"></audio>
+    <audio id="snd-cloudy" loop src="audio/cloudy.mp3"></audio>
+    <audio id="snd-snow" loop src="audio/snow.mp3"></audio>
 
     <div id="effects-bg"></div>
     <div id="lightning-bolt" class="lightning"></div>
@@ -55,90 +26,16 @@
     <div id="scanner" class="scanner"></div>
 
     <div class="container" id="main-cont">
-        <h1 class="header-title"><span onclick="activateSpace()">KYIV</span><span onclick="activateZom()">SYNERGY</span></h1>
+        <h1 class="header-title">
+            <span onclick="activateSpace()">KYIV</span>
+            <span onclick="activateZom()">SYNERGY</span>
+        </h1>
         <div id="current-temp" onclick="activateAI()">--°C</div>
-        <div id="status" style="color:var(--acc); text-transform:uppercase; letter-spacing:2px; font-weight:bold">Audio-Visual System Ready</div>
+        <div id="status" style="color:var(--acc); text-transform:uppercase; letter-spacing:2px; font-weight:bold">System Active</div>
         <div class="forecast-grid" id="real-f"></div>
         <div class="forecast-grid" id="demo-f" style="border-top:1px solid rgba(255,255,255,0.1); margin-top:20px; padding-top:10px"></div>
     </div>
 
-    <script>
-        let audioOn = false;
-        const ALL_SND = ["snd-rain", "snd-wind", "snd-thunder", "snd-zombie", "snd-meteor", "snd-ai"];
-
-        function toggleAudio() {
-            audioOn = !audioOn;
-            const btn = document.getElementById('audio-btn');
-            if (audioOn) {
-                btn.innerText = "🔊 SOUND ON";
-                ALL_SND.forEach(id => {
-                    const s = document.getElementById(id);
-                    s.play().then(() => s.pause()).catch(() => {});
-                });
-                applyFX(document.getElementById('status').innerText);
-            } else {
-                btn.innerText = "🔇 ENABLE SOUND";
-                stopAllS();
-            }
-        }
-
-        function stopAllS() { ALL_SND.forEach(id => { const s = document.getElementById(id); s.pause(); s.currentTime = 0; }); }
-        function playS(id) { if(audioOn) document.getElementById(id).play().catch(() => {}); }
-
-        const MAP = { 0:"Clear", 3:"Cloudy", 63:"Rainy", 71:"Snowy", 95:"Stormy" };
-        const ICONS = { 0:"☀️", 3:"☁️", 63:"🌧️", 71:"❄️", 95:"⚡" };
-
-        async function init() {
-            try {
-                const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=50.45&longitude=30.52&current=temperature_2m,weather_code&daily=weather_code,temperature_2m_max');
-                const data = await res.json();
-                updateDisp(Math.round(data.current.temperature_2m), MAP[data.current.weather_code]||"Clear");
-                const rf = document.getElementById('real-f');
-                for(let i=1;i<=5;i++) createDay(rf, new Date(data.daily.time[i]).toLocaleDateString('en',{weekday:'short'}), Math.round(data.daily.temperature_2m_max[i]), data.daily.weather_code[i]);
-                const df = document.getElementById('demo-f');
-                Object.entries(MAP).forEach(([c,s]) => createDay(df, "Demo", 25, c, s));
-                applyFX(MAP[data.current.weather_code]||"Clear");
-            } catch(e) { document.getElementById('status').innerText = "Offline"; }
-        }
-
-        function createDay(p, n, t, c, fs=null) {
-            const s = fs || MAP[c] || "Clear";
-            const el = document.createElement('div'); el.className = 'day-card';
-            el.innerHTML = `<div>${n}</div><div style="font-size:1.5rem;margin:5px 0">${ICONS[c]||"☀️"}</div><div>${t}°</div>`;
-            el.onclick = () => { updateDisp(t, s); applyFX(s); };
-            p.appendChild(el);
-        }
-        function updateDisp(t, s) { document.getElementById('current-temp').innerText = `${t}°C`; document.getElementById('status').innerText = s; }
-
-        function applyFX(s) {
-            stopAllS(); const bg = document.getElementById('effects-bg');
-            bg.innerHTML = ''; document.getElementById('lightning-bolt').style.animation = 'none';
-            document.getElementById('blood-fog').style.opacity = '0';
-            document.getElementById('scanner').style.display = 'none';
-            document.getElementById('main-cont').classList.remove('shake');
-            
-            if(s === "Clear") { document.body.style.background = "#0c4a6e"; spawn(bg, 'sun-aura'); }
-            else if(s === "Cloudy") { document.body.style.background = "#334155"; playS('snd-wind'); for(let i=0; i<6; i++) spawn(bg, 'cloud'); }
-            else if(s.includes("Rainy")) { document.body.style.background = "#0f172a"; playS('snd-rain'); for(let i=0; i<100; i++) spawn(bg, 'rain-drop'); }
-            else if(s.includes("Snowy")) { document.body.style.background = "#1e293b"; playS('snd-wind'); for(let i=0; i<60; i++) spawn(bg, 'snow-flake'); }
-            else if(s === "Stormy") { document.body.style.background = "#020617"; playS('snd-thunder'); playS('snd-rain'); document.getElementById('lightning-bolt').style.animation = 'flash 5s infinite'; for(let i=0;i<120;i++) spawn(bg, 'rain-drop'); }
-        }
-
-        function spawn(p, c, txt=null) {
-            const el = document.createElement('div'); el.className = c;
-            el.style.left = Math.random()*100+'vw';
-            if(c==='snow-flake') { el.style.width=el.style.height=Math.random()*6+4+'px'; el.style.animationDuration=Math.random()*4+3+'s'; }
-            else if(c==='cloud') { el.style.top=Math.random()*70+'vh'; el.style.width='400px'; el.style.height='200px'; el.style.animationDuration='20s'; el.style.left = '-500px'; }
-            else { el.style.animationDuration=Math.random()*0.5+0.5+'s'; }
-            if(txt) el.innerText = txt;
-            p.appendChild(el);
-        }
-
-        window.activateSpace = () => { applyFX('None'); playS('snd-meteor'); document.body.style.background="#000"; document.getElementById('status').innerText="METEOR SHOWER"; for(let i=0;i<25;i++) { const m = document.createElement('div'); m.className='meteor'; m.style.left=Math.random()*100+'vw'; m.style.animationDelay=Math.random()*5+'s'; document.getElementById('effects-bg').appendChild(m); } };
-        window.activateZom = () => { applyFX('None'); playS('snd-zombie'); document.getElementById('blood-fog').style.opacity='1'; document.getElementById('main-cont').classList.add('shake'); document.getElementById('status').innerText="ZOMBIE FOG"; };
-        window.activateAI = () => { applyFX('None'); playS('snd-ai'); document.body.style.background="#000"; document.getElementById('status').innerText="AI OVERRIDE"; document.getElementById('scanner').style.display='block'; for(let i=0;i<50;i++) spawn(document.getElementById('effects-bg'), 'matrix', Math.random()>0.5?'SYSTEM_FAILURE':'1010101'); };
-        
-        init();
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
