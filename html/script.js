@@ -109,7 +109,7 @@ function spawn(p, c, txt = null) {
 }
 
 window.activateSpace = () => { applyFX('None'); playS('snd-meteor'); document.body.style.background = "#000"; document.getElementById('status').innerText = "METEOR SHOWER"; for (let i = 0; i < 25; i++) { const m = document.createElement('div'); m.className = 'meteor'; m.style.left = Math.random() * 100 + 'vw'; m.style.animationDelay = Math.random() * 5 + 's'; document.getElementById('effects-bg').appendChild(m); } };
-window.activateZom = () => { applyFX('None'); playS('snd-zombie'); document.getElementById('blood-fog').style.opacity = '1'; document.getElementById('main-cont').classList.add('shake'); document.getElementById('status').innerText = "ZOMBIE FOG"; };
+window.activateZom = () => { isEggActive = true; applyFX('None'); playS('snd-zombie'); document.getElementById('blood-fog').style.opacity = '1'; document.getElementById('main-cont').classList.add('shake'); document.getElementById('status').innerText = "ZOMBIE FOG"; };
 window.activateAI = () => { applyFX('None'); playS('snd-ai'); document.body.style.background = "#000"; document.getElementById('status').innerText = "AI OVERRIDE"; document.getElementById('scanner').style.display = 'block'; for (let i = 0; i < 50; i++) spawn(document.getElementById('effects-bg'), 'matrix', Math.random() > 0.5 ? 'SYSTEM_FAILURE' : '1010101'); };
 
 init();
