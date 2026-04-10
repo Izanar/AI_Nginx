@@ -6,8 +6,10 @@ body { margin: 0; padding: 0; font-family: 'Inter', sans-serif; background: var(
 .header-title span { cursor: pointer; transition: 0.3s; background: linear-gradient(90deg, #38bdf8, #818cf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 #current-temp { font-size: 5rem; font-weight: 800; margin: 10px 0; cursor: pointer; }
 #audio-btn { position: fixed; top: 20px; right: 20px; z-index: 100; background: var(--acc); color: #000; border: none; padding: 12px 24px; border-radius: 30px; font-weight: 900; cursor: pointer; box-shadow: 0 0 20px rgba(56,189,248,0.4); }
-.forecast-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-top: 20px; }
-.day-card { background: rgba(255,255,255,0.05); padding: 12px; border-radius: 1.2rem; cursor: pointer; }
+.forecast-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(70px, 1fr)); gap: 10px; margin-top: 20px; }
+.day-card { background: rgba(255,255,255,0.05); padding: 10px 5px; border-radius: 1rem; cursor: pointer; transition: 0.2s; font-size: 0.9rem; }
+.day-card:hover { background: rgba(255,255,255,0.1); transform: translateY(-3px); }
+.day-card.today { border: 2px solid var(--acc); background: rgba(56,189,248,0.1); }
 
 .meteor { position: absolute; width: 10px; height: 400px; background: linear-gradient(to top, #fff, #ffae00, transparent); border-radius: 999px; filter: drop-shadow(0 0 40px #ff4500); animation: mfall 0.8s linear infinite; opacity: 0; }
 .meteor::after { content: ''; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 25px; height: 25px; background: #fff; border-radius: 50%; box-shadow: 0 0 50px 20px #ff8c00, 0 0 100px 40px #ff4500; }

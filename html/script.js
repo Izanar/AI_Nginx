@@ -31,22 +31,30 @@ const ICONS = { 0: "☀️", 3: "☁️", 63: "🌧️", 71: "❄️", 95: "⚡"
 
 async function init() {
     try {
-        const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=50.45&longitude=30.52&current=temperature_2m,weather_code&daily=weather_code,temperature_2m_max');
+        const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=50.45&longitude=30.52&current=temperature_2m,weather_code&daily=weather_code,temperature_2m_max&past_days=5&forecast_days=6');
         const data = await res.json();
         updateDisp(Math.round(data.current.temperature_2m), MAP[data.current.weather_code] || "Clear");
         const rf = document.getElementById('real-f');
-        for (let i = 1; i <= 5; i++) createDay(rf, new Date(data.daily.time[i]).toLocaleDateString('en', { weekday: 'short' }), Math.round(data.daily.temperature_2m_max[i]), data.daily.weather_code[i]);
+        rf.innerHTML = '';
+        for (let i = 0; i < data.daily.time.length; i++) {
+            const dateObj = new Date(data.daily.time[i]);
+            const dayName = dateObj.toLocaleDateString('en', { weekday: 'short' });
+            const dateStr = dateObj.toLocaleDateString('en', { day: 'numeric', month: 'short' });
+            const isToday = i === 5;
+            createDay(rf, dayName, Math.round(data.daily.temperature_2m_max[i]), data.daily.weather_code[i], null, dateStr, isToday);
+        }
         const df = document.getElementById('demo-f');
+        df.innerHTML = '';
         Object.entries(MAP).forEach(([c, s]) => createDay(df, "Demo", 25, c, s));
         applyFX(MAP[data.current.weather_code] || "Clear");
     } catch (e) { document.getElementById('status').innerText = "Offline"; }
 }
 
-function createDay(p, n, t, c, fs = null) {
+function createDay(p, n, t, c, fs = null, date = null, isToday = false) {
     const s = fs || MAP[c] || "Clear";
     const el = document.createElement('div');
-    el.className = 'day-card';
-    el.innerHTML = `<div>${n}</div><div style="font-size:1.5rem;margin:5px 0">${ICONS[c] || "☀️"}</div><div>${t}°</div>`;
+    el.className = `day-card${isToday ? ' today' : ''}`;
+    el.innerHTML = `<div>${n}</div><div style="font-size:0.7rem;opacity:0.6">${date || ''}</div><div style="font-size:1.5rem;margin:5px 0">${ICONS[c] || "☀️"}</div><div>${t}°</div>`;
     el.onclick = () => { updateDisp(t, s); applyFX(s); };
     p.appendChild(el);
 }
